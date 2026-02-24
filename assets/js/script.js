@@ -27,7 +27,7 @@ const f = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
 function calculate() {
   const monthly     = getVal('monthly', 0, 9999999, 0);
   const growth      = getVal('growth', 0, 1, 0);
-  const fixedDedNoIns    = getVal('deductions', 0, 9999999, 0);
+  const fixedDed    = getVal('deductions', 0, 9999999, 0);
   const insCurrent  = getVal('ins_current', 0, 99999, 0);
   const unionPct    = getVal('union_pct', -100, 1000, 0) / 100;
   const insUnionVal = getVal('ins_union', 0, 99999, 0);
@@ -40,27 +40,29 @@ function calculate() {
   const baseAnnual = monthly * 12 * (1 + growth);
   const unionGross = baseAnnual * (1 + unionPct);
   const distGross  = baseAnnual * (1 + distPct);
-  const fixedDed  = fixedDedNoIns - insCurrent; // Remove current insurance from fixed deductions to avoid double-counting
   const annualDed  = fixedDed * 12;
 
-  const monthlyUnionGross = unionGross / 12;
-  const monthlyDistGross  = distGross  / 12;
-  const monthlyUnionNet   = monthlyUnionGross - fixedDed - insUnionVal;
-  const monthlyDistNet    = monthlyDistGross  - fixedDed - insDistVal;
-  const monthlyDiff       = monthlyUnionNet - monthlyDistNet;
+  const monthlyUnionGross   = unionGross / 12;
+  const monthlyDistGross    = distGross  / 12;
+  const monthlyCurrentGross = monthly;
+  const monthlyUnionNet     = monthlyUnionGross   - fixedDed - insUnionVal;
+  const monthlyDistNet      = monthlyDistGross    - fixedDed - insDistVal;
+  const monthlyCurrentNet   = monthlyCurrentGross - fixedDed - insCurrent;
+  const monthlyDiff         = monthlyUnionNet - monthlyDistNet;
 
   document.getElementById('monthlyBody').innerHTML = `
-    <tr><td>Monthly Gross</td><td class="union-col">${f.format(monthlyUnionGross)}</td><td class="dist-col">${f.format(monthlyDistGross)}</td></tr>
-    <tr><td>Fixed Deductions</td><td class="union-col">${f.format(fixedDed)}</td><td class="dist-col">${f.format(fixedDed)}</td></tr>
-    <tr><td>Monthly Insurance</td><td class="union-col">${f.format(insUnionVal)}</td><td class="dist-col">${f.format(insDistVal)}</td></tr>
+    <tr><td>Monthly Gross</td><td>${f.format(monthlyCurrentGross)}</td><td class="union-col">${f.format(monthlyUnionGross)}</td><td class="dist-col">${f.format(monthlyDistGross)}</td></tr>
+    <tr><td>Fixed Deductions</td><td>${f.format(fixedDed)}</td><td class="union-col">${f.format(fixedDed)}</td><td class="dist-col">${f.format(fixedDed)}</td></tr>
+    <tr><td>Monthly Insurance</td><td>${f.format(insCurrent)}</td><td class="union-col">${f.format(insUnionVal)}</td><td class="dist-col">${f.format(insDistVal)}</td></tr>
     <tr class="highlight-row">
       <td>Monthly Net</td>
+      <td>${f.format(monthlyCurrentNet)}</td>
       <td class="union-col">${f.format(monthlyUnionNet)}</td>
       <td class="dist-col">${f.format(monthlyDistNet)}</td>
     </tr>
     <tr>
       <td>Monthly Difference</td>
-      <td colspan="2" class="${monthlyDiff >= 0 ? 'diff-pos' : 'diff-neg'}" style="text-align:center">
+      <td colspan="3" class="${monthlyDiff >= 0 ? 'diff-pos' : 'diff-neg'}" style="text-align:center">
         ${monthlyDiff >= 0 ? 'Union +' : 'District +'}${f.format(Math.abs(monthlyDiff))}/mo
       </td>
     </tr>

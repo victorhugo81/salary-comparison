@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Salary & Insurance Long-Term Comparison</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
 
 </head>
@@ -12,20 +11,16 @@
 <div class="app">
   <div class="header">
     <div class="header-left">
-      <div class="pill">Salary Tool</div>
+      <div class="pill">Salary Calculator</div>
       <h1>Negotiations Comparison</h1>
       <p>Compare long-term financial outcomes across contract proposals</p>
     </div>
     <div class="header-controls">
       <div class="logo">
         <div class="logo-mark">
-          <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M10 2L12.5 7.5H18L13.5 11L15.5 17L10 13.5L4.5 17L6.5 11L2 7.5H7.5L10 2Z" fill="white" opacity="0.9"/>
-          </svg>
+          <img src="./assets/images/csea-399-logo.png" alt="Calexico CSEA" style="width:50px;height:auto;">
         </div>
         <div class="logo-text">
-          <span class="logo-name">NegotiCalc</span>
-          <span class="logo-sub">Contract Analyzer</span>
         </div>
       </div>
       <button class="theme-toggle" id="themeToggle" aria-label="Toggle light/dark mode" title="Toggle theme">
@@ -154,6 +149,7 @@
           <thead>
             <tr>
               <th>Calculation</th>
+              <th>Current</th>
               <th>Union</th>
               <th>District</th>
             </tr>
@@ -197,6 +193,8 @@
         <div class="summary-detail" id="advantageText">Enter your values above to see the financial verdict.</div>
       </div>
     </div>
+
+    <p class="disclaimer">All figures shown are estimates based on the values you enter and do not account for taxes, overtime, benefit changes, or other variable compensation. Results are intended for informational and comparison purposes only and should not be relied upon as financial or legal advice.</p>
   </div>
 
 </div>
