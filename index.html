@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salary & Insurance Long-Term Comparison</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="header-left">
+      <div class="pill">Salary Tool</div>
+      <h1>Negotiations Comparison</h1>
+      <p>Compare long-term financial outcomes across contract proposals</p>
+    </div>
+    <div class="header-controls">
+      <div class="logo">
+        <div class="logo-mark">
+          <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 2L12.5 7.5H18L13.5 11L15.5 17L10 13.5L4.5 17L6.5 11L2 7.5H7.5L10 2Z" fill="white" opacity="0.9"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="logo-name">NegotiCalc</span>
+          <span class="logo-sub">Contract Analyzer</span>
+        </div>
+      </div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle light/dark mode" title="Toggle theme">
+        <div class="toggle-thumb">
+          <span class="toggle-icon" id="toggleIcon">🌙</span>
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Step 1 -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num">1</div>
+      <div class="step-title">Base Salary & Deductions</div>
+    </div>
+    <div class="grid-2">
+      <div class="field" id="field-monthly">
+        <label>Current Monthly Earnings ($)</label>
+        <input type="number" id="monthly" min="0" max="9999999" step="0.01" placeholder="0.00">
+        <span class="hint">Enter a valid positive amount</span>
+      </div>
+      <div class="field">
+        <label>Professional Growth</label>
+        <select id="growth">
+          <option value="0" selected>0% — No growth</option>
+          <option value="0.05">5% annual</option>
+          <option value="0.10">10% annual</option>
+          <option value="0.15">15% annual</option>
+        </select>
+      </div>
+      <div class="field" id="field-deductions">
+        <label>Monthly Deductions (Fixed)</label>
+        <input type="number" id="deductions" min="0" max="9999999" step="0.01" placeholder="0.00">
+        <span class="hint">Enter a valid positive amount</span>
+      </div>
+      <div class="field" id="field-ins_current">
+        <label>Standard Monthly Insurance</label>
+        <input type="number" id="ins_current" min="0" max="99999" step="0.01" placeholder="0.00">
+        <span class="hint">Enter a valid positive amount</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num">2</div>
+      <div class="step-title">Proposals & Insurance Locks</div>
+    </div>
+    <div class="proposal-grid">
+
+      <div class="proposal-card union">
+        <div class="proposal-label union"><span class="dot dot-union"></span>Union Proposal</div>
+        <div class="field" id="field-union_pct">
+          <label>Salary Increase (%)</label>
+          <input type="number" id="union_pct" min="-100" max="1000" step="0.1" placeholder="0.0">
+          <span class="hint">Enter -100 to 1000</span>
+        </div>
+        <div class="sub-grid">
+          <div class="field" id="field-ins_union">
+            <label>Monthly Insurance</label>
+            <input type="number" id="ins_union" min="0" max="99999" step="0.01" placeholder="0.00">
+            <span class="hint">Positive number only</span>
+          </div>
+          <div class="field">
+            <label>Years Locked</label>
+            <select id="union_years">
+              <option value="1" selected>1 Year</option>
+              <option value="2">2 Years</option>
+              <option value="3">3 Years</option>
+              <option value="4">4 Years</option>
+              <option value="5">5 Years</option>
+              <option value="6">6 Years</option>
+              <option value="7">7 Years</option>
+              <option value="8">8 Years</option>
+              <option value="9">9 Years</option>
+              <option value="10">10 Years</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="proposal-card district">
+        <div class="proposal-label district"><span class="dot dot-dist"></span>District Offer</div>
+        <div class="field" id="field-dist_pct">
+          <label>Salary Increase (%)</label>
+          <input type="number" id="dist_pct" min="-100" max="1000" step="0.1" placeholder="0.0">
+          <span class="hint">Enter -100 to 1000</span>
+        </div>
+        <div class="sub-grid">
+          <div class="field" id="field-ins_dist">
+            <label>Monthly Insurance</label>
+            <input type="number" id="ins_dist" min="0" max="99999" step="0.01" placeholder="0.00">
+            <span class="hint">Positive number only</span>
+          </div>
+          <div class="field">
+            <label>Years Locked</label>
+            <select id="dist_years">
+              <option value="1" selected>1 Year</option>
+              <option value="2">2 Years</option>
+              <option value="3">3 Years</option>
+              <option value="4">4 Years</option>
+              <option value="5">5 Years</option>
+              <option value="6">6 Years</option>
+              <option value="7">7 Years</option>
+              <option value="8">8 Years</option>
+              <option value="9">9 Years</option>
+              <option value="10">10 Years</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="step-card">
+    <div class="results-header" style="margin-top: 24px;">
+      <div class="results-title">Monthly Breakdown</div>
+    </div>
+    <div class="table-wrap">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Calculation</th>
+              <th>Union</th>
+              <th>District</th>
+            </tr>
+          </thead>
+          <tbody id="monthlyBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="results-header" style="margin-top: 24px;">
+      <div class="results-title">Net Projection</div>
+      <select class="period-select" id="projection_period" onchange="calculate()">
+        <option value="5">5 Years</option>
+        <option value="10">10 Years</option>
+        <option value="15">15 Years</option>
+        <option value="20">20 Years</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Year</th>
+              <th>Union Net</th>
+              <th>District Net</th>
+              <th>Difference</th>
+            </tr>
+          </thead>
+          <tbody id="multiYearBody"></tbody>
+          <tfoot><tr class="total-row" id="totalRow"></tr></tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div class="summary">
+      <div class="summary-inner">
+        <div class="summary-eyebrow" id="summaryTitle">Analysis Summary</div>
+        <div class="summary-winner" id="winnerText">—</div>
+        <div class="summary-amount" id="totalAdvantage"></div>
+        <div class="summary-detail" id="advantageText">Enter your values above to see the financial verdict.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+
+<script src="assets/js/script.js"></script>
+</body>
+</html>
