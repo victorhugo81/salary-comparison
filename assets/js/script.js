@@ -40,20 +40,28 @@ function calculate() {
   const baseAnnual = monthly * 12 * (1 + growth);
   const unionGross = baseAnnual * (1 + unionPct);
   const distGross  = baseAnnual * (1 + distPct);
-  const annualDed  = fixedDed * 12;
+  const fixedDedNoIns  = fixedDed - insCurrent;
+  const annualDed  = fixedDedNoIns * 12;
 
   const monthlyUnionGross   = unionGross / 12;
   const monthlyDistGross    = distGross  / 12;
-  const monthlyCurrentGross = monthly;
-  const monthlyUnionNet     = monthlyUnionGross   - fixedDed - insUnionVal;
-  const monthlyDistNet      = monthlyDistGross    - fixedDed - insDistVal;
-  const monthlyCurrentNet   = monthlyCurrentGross - fixedDed - insCurrent;
+  const monthlyCurrentGross = monthly * (1 + growth);          // Total Monthly Earnings incl. professional growth
+  const monthlyUnionNet     = monthlyUnionGross   - fixedDedNoIns - insUnionVal;
+  const monthlyDistNet      = monthlyDistGross    - fixedDedNoIns - insDistVal;
+  const monthlyCurrentNet   = monthlyCurrentGross - fixedDedNoIns - insCurrent;
   const monthlyDiff         = monthlyUnionNet - monthlyDistNet;
+
+  const growthAmt       = monthly * growth;
+  const totalDedCurrent = fixedDedNoIns + insCurrent;   // = fixedDed
+  const totalDedUnion   = fixedDedNoIns + insUnionVal;
+  const totalDedDist    = fixedDedNoIns + insDistVal;
 
   document.getElementById('monthlyBody').innerHTML = `
     <tr><td>Monthly Gross</td><td>${f.format(monthlyCurrentGross)}</td><td class="union-col">${f.format(monthlyUnionGross)}</td><td class="dist-col">${f.format(monthlyDistGross)}</td></tr>
-    <tr><td>Fixed Deductions</td><td>${f.format(fixedDed)}</td><td class="union-col">${f.format(fixedDed)}</td><td class="dist-col">${f.format(fixedDed)}</td></tr>
+    <tr><td>Professional Growth</td><td>${f.format(growthAmt)}</td><td class="union-col">${f.format(growthAmt)}</td><td class="dist-col">${f.format(growthAmt)}</td></tr>
+    <tr><td>Partial Deductions (Taxes / SS / Dues)</td><td>${f.format(fixedDedNoIns)}</td><td class="union-col">${f.format(fixedDedNoIns)}</td><td class="dist-col">${f.format(fixedDedNoIns)}</td></tr>
     <tr><td>Monthly Insurance</td><td>${f.format(insCurrent)}</td><td class="union-col">${f.format(insUnionVal)}</td><td class="dist-col">${f.format(insDistVal)}</td></tr>
+    <tr><td>Total Deductions</td><td>${f.format(totalDedCurrent)}</td><td class="union-col">${f.format(totalDedUnion)}</td><td class="dist-col">${f.format(totalDedDist)}</td></tr>
     <tr class="highlight-row">
       <td>Monthly Net</td>
       <td>${f.format(monthlyCurrentNet)}</td>
