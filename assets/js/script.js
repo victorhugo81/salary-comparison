@@ -1,4 +1,18 @@
 
+function syncInsForYears(yearsElId, insElId) {
+  const yearsVal = parseInt(document.getElementById(yearsElId).value);
+  const insEl = document.getElementById(insElId);
+  if (yearsVal === 0) {
+    insEl.value = document.getElementById('ins_current').value;
+    insEl.readOnly = true;
+  } else if (yearsVal === 1) {
+    insEl.value = '0';
+    insEl.readOnly = false;
+  } else {
+    insEl.readOnly = false;
+  }
+}
+
 function sanitizeNumber(value, min, max, fallback = 0) {
   const n = parseFloat(value);
   if (isNaN(n)) return fallback;
@@ -145,22 +159,30 @@ validations.forEach(([id, fieldId, min, max]) => {
   }
 });
 
-// FIX: Single consolidated listener for ins_current
-// Sync FIRST, then validate, then calculate — all in the correct order
 document.getElementById('ins_current').addEventListener('input', function() {
-  // 1. Sync value to both proposal fields immediately
-  document.getElementById('ins_union').value = this.value;
-  document.getElementById('ins_dist').value  = this.value;
-  // 2. Validate the field
+  if (parseInt(document.getElementById('union_years').value) === 0) {
+    document.getElementById('ins_union').value = this.value;
+  }
+  if (parseInt(document.getElementById('dist_years').value) === 0) {
+    document.getElementById('ins_dist').value = this.value;
+  }
   validateField(this, 'field-ins_current', 0, 99999);
-  // 3. Now calculate with the fully synced values
   calculate();
 });
 
-// Select listeners
-['growth', 'union_years', 'dist_years', 'projection_period'].forEach(id => {
+document.getElementById('union_years').addEventListener('change', function() {
+  syncInsForYears('union_years', 'ins_union');
+  calculate();
+});
+document.getElementById('dist_years').addEventListener('change', function() {
+  syncInsForYears('dist_years', 'ins_dist');
+  calculate();
+});
+['growth', 'projection_period'].forEach(id => {
   const el = document.getElementById(id);
   if (el) el.addEventListener('change', calculate);
 });
 
+syncInsForYears('union_years', 'ins_union');
+syncInsForYears('dist_years', 'ins_dist');
 calculate();

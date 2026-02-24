@@ -255,6 +255,7 @@
     transition: border-color 0.15s, box-shadow 0.15s;
     -webkit-appearance: none;
     appearance: none;
+    margin-bottom: 25px;
   }
 
   .field select {
@@ -275,6 +276,11 @@
   .field input.invalid {
     border-color: var(--danger);
     box-shadow: 0 0 0 3px rgba(244,63,94,0.15);
+  }
+
+  .field input[readonly] {
+    opacity: 0.55;
+    cursor: default;
   }
 
   .field .hint {
