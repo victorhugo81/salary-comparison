@@ -132,7 +132,10 @@ function calculate() {
 // Theme toggle
 const toggle = document.getElementById('themeToggle');
 const icon = document.getElementById('toggleIcon');
-let isDark = true;
+// Default to light theme
+let isDark = false;
+document.documentElement.setAttribute('data-theme', 'light');
+icon.textContent = '☀️';
 toggle.addEventListener('click', () => {
   isDark = !isDark;
   document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
