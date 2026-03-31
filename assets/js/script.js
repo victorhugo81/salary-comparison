@@ -1,16 +1,18 @@
 
-function syncInsForYears(yearsElId, insElId) {
-  const yearsVal = parseInt(document.getElementById(yearsElId).value);
-  const insEl = document.getElementById(insElId);
-  if (yearsVal === 0) {
-    insEl.value = document.getElementById('ins_current').value;
-    insEl.readOnly = true;
-  } else if (yearsVal === 1) {
-    insEl.value = '0';
-    insEl.readOnly = false;
-  } else {
-    insEl.readOnly = false;
-  }
+function calcMonthlyInsurance() {
+  const unionCaps     = getVal('union_ins_caps', 0, 99999, 0);
+  const unionPremiums = getVal('union_ins_premiums', 0, 99999, 0);
+  const insUnionEl    = document.getElementById('ins_union');
+  if (insUnionEl) insUnionEl.value = Math.max(0, (unionPremiums - unionCaps) / 10).toFixed(2);
+
+  const distCaps     = getVal('dist_ins_caps', 0, 99999, 0);
+  const distPremiums = getVal('dist_ins_premiums', 0, 99999, 0);
+  const insDistEl    = document.getElementById('ins_dist');
+  if (insDistEl) insDistEl.value = Math.max(0, (distPremiums - distCaps) / 10).toFixed(2);
+}
+
+function syncInsForYears() {
+  // Monthly Insurance is auto-calculated from (Premiums - Caps) / 10
 }
 
 function sanitizeNumber(value, min, max, fallback = 0) {
@@ -63,7 +65,8 @@ function calculate() {
   const monthlyUnionNet     = monthlyUnionGross   - fixedDedNoIns - insUnionVal;
   const monthlyDistNet      = monthlyDistGross    - fixedDedNoIns - insDistVal;
   const monthlyCurrentNet   = monthlyCurrentGross - fixedDedNoIns - insCurrent;
-  const monthlyDiff         = monthlyUnionNet - monthlyDistNet;
+  const monthlyDiffUnion    = monthlyUnionNet - monthlyCurrentNet;
+  const monthlyDiffDist     = monthlyDistNet  - monthlyCurrentNet;
 
   const growthAmt       = monthly * growth;
   const totalDedCurrent = fixedDedNoIns + insCurrent;   // = fixedDed
@@ -83,10 +86,10 @@ function calculate() {
       <td class="dist-col">${f.format(monthlyDistNet)}</td>
     </tr>
     <tr>
-      <td>Monthly Difference</td>
-      <td colspan="3" class="${monthlyDiff >= 0 ? 'diff-pos' : 'diff-neg'}" style="text-align:center">
-        ${monthlyDiff >= 0 ? 'Union +' : 'District +'}${f.format(Math.abs(monthlyDiff))}/mo
-      </td>
+      <td>Monthly Difference vs Current</td>
+      <td>—</td>
+      <td class="${monthlyDiffUnion >= 0 ? 'diff-pos' : 'diff-neg'}">${monthlyDiffUnion >= 0 ? '+' : ''}${f.format(monthlyDiffUnion)}/mo</td>
+      <td class="${monthlyDiffDist  >= 0 ? 'diff-pos' : 'diff-neg'}">${monthlyDiffDist  >= 0 ? '+' : ''}${f.format(monthlyDiffDist)}/mo</td>
     </tr>
   `;
 
@@ -112,13 +115,13 @@ function calculate() {
 
   const totalDiff = totalU - totalD;
   document.getElementById('totalRow').innerHTML = `
-    <td>Total Net</td>
+    <td style="height:25px;">Total Net</td>
     <td class="union-col">${f.format(totalU)}</td>
     <td class="dist-col">${f.format(totalD)}</td>
     <td class="${totalDiff >= 0 ? 'diff-pos' : 'diff-neg'}">${f.format(totalDiff)}</td>
   `;
 
-  const winner = totalDiff >= 0 ? 'Union Proposal' : 'District Offer';
+  const winner = totalDiff >= 0 ? 'Option 1' : 'Option 2';
   const winnerColor = totalDiff >= 0 ? 'var(--accent-union)' : 'var(--accent-dist)';
   const monthlyAvg = Math.abs(totalDiff / (projYears * 12));
 
@@ -142,14 +145,12 @@ toggle.addEventListener('click', () => {
   icon.textContent = isDark ? '🌙' : '☀️';
 });
 
-// Validation config for non-ins_current fields
+// Validation config
 const validations = [
   ['monthly',    'field-monthly',    0, 9999999],
   ['deductions', 'field-deductions', 0, 9999999],
   ['union_pct',  'field-union_pct',  -100, 1000],
-  ['ins_union',  'field-ins_union',  0, 99999],
   ['dist_pct',   'field-dist_pct',   -100, 1000],
-  ['ins_dist',   'field-ins_dist',   0, 99999],
 ];
 
 validations.forEach(([id, fieldId, min, max]) => {
@@ -163,29 +164,21 @@ validations.forEach(([id, fieldId, min, max]) => {
 });
 
 document.getElementById('ins_current').addEventListener('input', function() {
-  if (parseInt(document.getElementById('union_years').value) === 0) {
-    document.getElementById('ins_union').value = this.value;
-  }
-  if (parseInt(document.getElementById('dist_years').value) === 0) {
-    document.getElementById('ins_dist').value = this.value;
-  }
   validateField(this, 'field-ins_current', 0, 99999);
   calculate();
 });
 
-document.getElementById('union_years').addEventListener('change', function() {
-  syncInsForYears('union_years', 'ins_union');
-  calculate();
+['union_ins_caps', 'union_ins_premiums', 'dist_ins_caps', 'dist_ins_premiums'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', () => { calcMonthlyInsurance(); calculate(); });
 });
-document.getElementById('dist_years').addEventListener('change', function() {
-  syncInsForYears('dist_years', 'ins_dist');
-  calculate();
-});
+
+document.getElementById('union_years').addEventListener('change', calculate);
+document.getElementById('dist_years').addEventListener('change', calculate);
 ['growth', 'projection_period'].forEach(id => {
   const el = document.getElementById(id);
   if (el) el.addEventListener('change', calculate);
 });
 
-syncInsForYears('union_years', 'ins_union');
-syncInsForYears('dist_years', 'ins_dist');
+calcMonthlyInsurance();
 calculate();
